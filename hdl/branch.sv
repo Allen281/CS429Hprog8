@@ -3,14 +3,11 @@ module branch(
     input wire[4:0] opcode,
     input wire[63:0] rd, rs, rt,
     input wire signed[11:0] literal,
-    input wire[63:0] pc,
+    input wire[63:0] pc, r31, return_address,
 
     output wire is_write,
     output reg[63:0] new_pc, write_address, write_data
 );
-    reg[63:0] r31, return_address;
-    register_file reg31(clk, 0, 0, 0, 0, r31, 0);
-    memory return(clk, r31-8, 0, 0, return_address);
 
     always @(*) begin
         case (opcode)
@@ -20,7 +17,7 @@ module branch(
             5'h0b: new_pc = (rs == 0) ? pc : rd-4;
             5'h0c:
                 new_pc = rd-4;
-                write_address = r31-8;
+                write_address = return_address;
                 is_write = 1;
                 write_data = pc + 4;
             5'h0d:
