@@ -37,7 +37,7 @@ module register_file (
     input wire[63:0] write_data, read_data1, read_data2
 );
     localparam MEM_SIZE = 512*1024;
-    reg[63:0] registers[31:0];
+    reg[63:0] registers[0:31];
 
     always @(posedge clk) begin
         if (reset) begin
