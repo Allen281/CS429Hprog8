@@ -98,6 +98,7 @@ module float_normalizer (
     end
 endmodule
 
+//TODO: Write checker for special cases
 module check_special_case(
     input wire[63:0] in,
     output wire is_special,

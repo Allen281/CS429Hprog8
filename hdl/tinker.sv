@@ -12,24 +12,36 @@ module decoder (
     assign literal = instruction[11:0];
 endmodule
 
+module fetcher(
+    input clk,
+    input reg[63:0] pc,
+    output reg[31:0] instruction
+);
+    memory next_instuction(clk, pc, 0, 0, instruction);
+endmodule
+
 module tinker_core(
     input clk,
     input reset
 );
     reg[63:0] pc;
-
     wire[31:0] instruction;
+
+    fetcher fetch(clk, pc, instruction);
+
     wire[4:0] opcode, rd, rs, rt;
     wire[11:0] literal;
     wire[63:0] rs_val, rt_val, alu_rslt, fpu_rslt, mem_rslt, write_data;
-    wire is_write;
+    wire is_write_reg, is_write_mem;
+    wire[63:0] write_address_mem;
 
     decoder decode(instruction, opcode, rd, rs, rt, literal);
-    register_file regs(clk, is_write, reset, rd, rs, rt, write_data, rs_val, rt_val);
 
-    alu int_arith(opcode, rd_val, rs_val, rt_val, literal, alu_rslt);
-    fpu float_arith(opcode, rd_val, rs_val, rt_val, literal, fpu_rslt);
-    memory mem(clk, address, is_write, write_data, mem_rslt);
+
+    
+
+    register_file regs(clk, is_write_reg, reset, rd, rs, rt, write_data, rs_val, rt_val);
+    memory mem(clk, write_address_mem, is_write_mem, write_data, mem_rslt);
 
     always @(posedge clk) begin
         if (reset) begin
