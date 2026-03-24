@@ -66,6 +66,7 @@ module float_normalizer (
     reg signed[13:0] norm_exp;
     reg[52:0] norm_mant;
     reg found;
+    integer i;
 
     always @(*) begin
         norm_exp = exp;

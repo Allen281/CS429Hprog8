@@ -1,7 +1,7 @@
 module decoder (
     input wire[31:0] instruction,
     output wire[4:0] opcode, rd, rs, rt,
-    output wire[11:0] literal,
+    output wire[11:0] literal
 );
 
     assign opcode = instruction[31:27];
@@ -25,14 +25,24 @@ module tinker_core(
     reg is_write_mem, is_write_reg;
     reg[63:0] write_data_mem, write_data_reg, read_data_mem, read_rslt, rslt_pc, write_address_mem;
 
+    decoder dec(
+        .instruction(instruction),
+        .opcode(opcode),
+        .rd(rd),
+        .rs(rs),
+        .rt(rt),
+        .literal(literal)
+    );
+
     memory mem(
         .clk(clk),
-        .address(pc),
-        .pc(pc),
+        .address(write_address_mem),
         .is_write(is_write_mem),
         .write_data(write_data_mem),
         .read_data(read_data_mem),
-        .instruction(instruction)
+
+        .instruction(instruction),
+        .return_address(return_address)
     );
 
     register_file regs(
@@ -47,7 +57,7 @@ module tinker_core(
         .read_data1(rd_val),
         .read_data2(rs_val),
         .read_data3(rt_val),
-        .r31_value(r31_val)
+        .r31_val(r31_val)
     );
 
     main_logic logic(
@@ -69,9 +79,11 @@ module tinker_core(
         .write_address_mem(write_address_mem),
         .write_data_mem(write_data_mem)
     );
+
+    assign return_address = pc + 4;
     
     always @(posedge clk) begin
-        pc = rslt_pc;
+        pc <= rslt_pc;
 
         if (reset) begin
             pc <= 64'h2000;

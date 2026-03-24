@@ -6,7 +6,7 @@ module main_logic(
     input wire[63:0] pc, r31, return_address, load_data,
 
     output reg is_write_reg, is_write_mem,
-    output reg[63:0] rslt_pc, write_data_reg, write_address_mem, write_data_mem,
+    output reg[63:0] rslt_pc, write_data_reg, write_address_mem, write_data_mem
 );
     reg[63:0] alu_rslt;
     alu alu_unit(
@@ -30,7 +30,6 @@ module main_logic(
     reg is_write_branch;
     reg[63:0] new_pc, write_address_branch, write_data_branch;
     branch branch_unit(
-        .clk(clk),
         .opcode(opcode),
         .rd_val(rd_val),
         .rs_val(rs_val),
@@ -49,7 +48,6 @@ module main_logic(
     reg is_write_mov_reg, is_write_mov_mem;
     reg[63:0] write_data_mov_reg, write_address_mov_mem, write_data_mov_mem;
     mov mov_unit(
-        .clk(clk),
         .opcode(opcode),
         .rd_val(rd_val),
         .rs_val(rs_val),
@@ -69,24 +67,28 @@ module main_logic(
         is_write_mem = 0;
         rslt_pc = pc;
         case (opcode) begin
-            5'h18, 5'h19, 5'h1a, 5'h1b, 5'h1c, 5'h1d, 5'h00, 5'h01, 5'h02, 5'h03, 5'h04, 5'h05, 5'h06, 5'h07:
+            5'h18, 5'h19, 5'h1a, 5'h1b, 5'h1c, 5'h1d, 5'h00, 5'h01, 5'h02, 5'h03, 5'h04, 5'h05, 5'h06, 5'h07: begin
                 write_data_reg = alu_rslt;
                 is_write_reg = 1;
-            5'h14, 5'h15, 5'h16, 5'h17:
+            end
+            5'h14, 5'h15, 5'h16, 5'h17: begin
                 write_data_reg = fpu_rslt;
                 is_write_reg = 1;
-            5'h08, 5'h09, 5'h0a, 5'h0b, 5'h0c, 5'h0d, 5'h0e:
+            end
+            5'h08, 5'h09, 5'h0a, 5'h0b, 5'h0c, 5'h0d, 5'h0e: begin
                 rslt_pc = new_pc;
                 is_write_mem = is_write_branch;
                 write_address_mem = write_address_branch;
                 write_data_mem = write_data_branch;
-            5'h10, 5'h11, 5'h12, 5'h13:
+            end
+            5'h10, 5'h11, 5'h12, 5'h13: begin
                 is_write_reg = is_write_mov_reg;
                 write_data_reg = write_data_mov_reg;
                 is_write_mem = is_write_mov_mem;
                 write_address_mem = write_address_mov_mem;
                 write_data_mem = write_data_mov_mem;
                 write_data_reg = write_data_mov_reg;
+            end
         end
     end
 endmodule

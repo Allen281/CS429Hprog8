@@ -8,7 +8,7 @@ module alu (
     always @(*) begin
         case (opcode)
             //Integer Operations
-            5'h18: rslt = $signed(rd_val)+$signed(rt_val);
+            5'h18: rslt = $signed(rs_val)+$signed(rt_val);
             5'h19: rslt = $signed(rd_val)+$signed(literal);
             5'h1a: rslt = $signed(rs_val)-$signed(rt_val);
             5'h1b: rslt = $signed(rd_val)-$signed(literal);
