@@ -37,6 +37,7 @@ module tinker_core(
     memory mem(
         .clk(clk),
         .address(write_address_mem),
+        .r31_val(r31_val),
         .is_write(is_write_mem),
         .write_data(write_data_mem),
         .read_data(read_data_mem),
@@ -54,6 +55,7 @@ module tinker_core(
         .read_reg2(rs),
         .read_reg3(rt),
         .write_data(write_data_reg),
+
         .read_data1(rd_val),
         .read_data2(rs_val),
         .read_data3(rt_val),
@@ -68,7 +70,7 @@ module tinker_core(
         .rt_val(rt_val),
         .literal(literal),
         .pc(pc),
-        .r31(r31_val),
+        .r31_val(r31_val),
         .return_address(return_address),
         .load_data(read_data_mem),
 
@@ -83,12 +85,10 @@ module tinker_core(
     assign return_address = pc + 4;
     
     always @(posedge clk) begin
-        pc <= rslt_pc;
-
         if (reset) begin
             pc <= 64'h2000;
         end else begin
-            pc <= pc + 4;
+            pc <= rslt_pc;
         end
     end
 
