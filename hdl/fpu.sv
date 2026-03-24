@@ -109,7 +109,7 @@ endmodule
 
 module fpu (
     input wire[4:0] opcode,
-    input wire[63:0] rd, rs, rt,
+    input wire[63:0] rs_val, rt_val,
     input wire[11:0] literal,
     output reg[63:0] rslt
 );
@@ -118,8 +118,8 @@ module fpu (
     wire[11:0] rs_exp, rt_exp;
     wire[52:0] rs_mant, rt_mant;
 
-    float_unpacker rs_unpack(rs, rs_sign, rs_exp, rs_mant);
-    float_unpacker rt_unpack(rt, rt_sign, rt_exp, rt_mant);
+    float_unpacker rs_unpack(rs_val, rs_sign, rs_exp, rs_mant);
+    float_unpacker rt_unpack(rt_val, rt_sign, rt_exp, rt_mant);
 
     wire is_subtract = (opcode == 5'h15);
     wire is_divide = (opcode == 5'h17);
