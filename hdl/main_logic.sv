@@ -1,5 +1,4 @@
 module main_logic(
-    input clk,
     input wire[4:0] opcode,
     input wire[63:0] rd_val, rs_val, rt_val,
     input wire[11:0] literal,
@@ -62,7 +61,7 @@ module main_logic(
     );
     
 
-    always @(posedge clk) begin
+    always @(*) begin
         is_write_reg = 0;
         is_write_mem = 0;
         rslt_pc = pc + 4;

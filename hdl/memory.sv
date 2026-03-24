@@ -1,8 +1,6 @@
 module memory(
     input wire clk,
-    input wire[63:0] address,
-    input wire[63:0] r31_val,
-
+    input wire[63:0] address, r31_val, pc,
     input wire is_write,
     input wire[63:0] write_data,
 
@@ -13,8 +11,8 @@ module memory(
     localparam MEM_SIZE = 512*1024;
     reg[7:0] bytes [0:MEM_SIZE-1];
 
-    assign instruction = {bytes[address], bytes[address+1], bytes[address+2], bytes[address+3]};
-    assign return_address = r31_val - 8;
+    assign instruction = {bytes[pc], bytes[pc+1], bytes[pc+2], bytes[pc+3]};
+    assign return_address = {bytes[r31_val-1], bytes[r31_val-2], bytes[r31_val-3], bytes[r31_val-4], bytes[r31_val-5], bytes[r31_val-6], bytes[r31_val-7], bytes[r31_val-8]};
 
     integer i;
     always @(posedge clk) begin
@@ -55,13 +53,7 @@ module register_file (
             end
             registers[31] <= MEM_SIZE;
         end else if (is_write) begin
-            if(is_rd_increment_literal) begin
-                registers[write_reg] <= registers[write_reg] + literal;
-            end else if(is_rd_modify_literal) begin
-                registers[write_reg] <= {registers[write_reg][63:12], literal};
-            end else begin
-                registers[write_reg] <= write_data;
-            end
+            registers[write_reg] <= write_data;
         end
     end
 
