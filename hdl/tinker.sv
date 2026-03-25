@@ -37,12 +37,13 @@ module tinker_core(
     memory mem(
         .clk(clk),
         .address(write_address_mem),
-        .pc(pc)
+        .pc(pc),
         .is_write(is_write_mem),
         .write_data(write_data_mem),
-        .read_data(read_data_mem),
 
+        .read_data(read_data_mem),
         .instruction(instruction),
+        .return_address(return_address)
     );
 
     register_file regs(
@@ -61,7 +62,7 @@ module tinker_core(
         .r31_val(r31_val)
     );
 
-    main_logic logic(
+    main_logic logic_unit(
         .opcode(opcode),
         .rd_val(rd_val),
         .rs_val(rs_val),

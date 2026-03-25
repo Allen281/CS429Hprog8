@@ -2,7 +2,7 @@ module main_logic(
     input wire[4:0] opcode,
     input wire[63:0] rd_val, rs_val, rt_val,
     input wire[11:0] literal,
-    input wire[63:0] pc, r31_val, return_address, load_data,
+    input wire[63:0] pc, r31_val, return_address,
 
     output reg is_write_reg, is_write_mem,
     output reg[63:0] rslt_pc, write_data_reg, write_address_mem, write_data_mem
@@ -65,7 +65,7 @@ module main_logic(
         is_write_reg = 0;
         is_write_mem = 0;
         rslt_pc = pc + 4;
-        case (opcode) begin
+        case (opcode)
             5'h18, 5'h19, 5'h1a, 5'h1b, 5'h1c, 5'h1d, 5'h00, 5'h01, 5'h02, 5'h03, 5'h04, 5'h05, 5'h06, 5'h07: begin
                 write_data_reg = alu_rslt;
                 is_write_reg = 1;
@@ -88,6 +88,6 @@ module main_logic(
                 write_data_mem = write_data_mov_mem;
                 write_data_reg = write_data_mov_reg;
             end
-        end
+        endcase
     end
 endmodule
