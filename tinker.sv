@@ -1,3 +1,6 @@
+`include "main_logic.sv"
+`include "memory.sv"
+
 module decoder (
     input wire[31:0] instruction,
     output wire[4:0] opcode, rd, rs, rt,
@@ -22,8 +25,8 @@ module tinker_core(
     wire[11:0] literal;
     wire[63:0] rd_val, rs_val, rt_val, r31_val, return_address, read_data_mem;
 
-    reg is_write_mem, is_write_reg;
-    reg[63:0] write_data_mem, write_data_reg, read_rslt, rslt_pc, write_address_mem;
+    wire is_write_mem, is_write_reg;
+    wire[63:0] write_data_mem, write_data_reg, read_rslt, rslt_pc, write_address_mem;
 
     decoder dec(
         .instruction(instruction),

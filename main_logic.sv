@@ -1,3 +1,8 @@
+`include "alu.sv"
+`include "branch.sv"
+`include "data_movement.sv"
+`include "fpu.sv"
+
 module main_logic(
     input wire[4:0] opcode,
     input wire[63:0] rd_val, rs_val, rt_val,
@@ -7,7 +12,7 @@ module main_logic(
     output reg is_write_reg, is_write_mem,
     output reg[63:0] rslt_pc, write_data_reg, write_address_mem, write_data_mem
 );
-    reg[63:0] alu_rslt;
+    wire[63:0] alu_rslt;
     alu alu_unit(
         .opcode(opcode),
         .rd_val(rd_val),
@@ -17,7 +22,7 @@ module main_logic(
         .rslt(alu_rslt)
     );
 
-    reg[63:0] fpu_rslt;
+    wire[63:0] fpu_rslt;
     fpu fpu_unit(
         .opcode(opcode),
         .rs_val(rs_val),
@@ -26,8 +31,8 @@ module main_logic(
         .rslt(fpu_rslt)
     );
 
-    reg is_write_branch;
-    reg[63:0] new_pc, write_address_branch, write_data_branch;
+    wire is_write_branch;
+    wire[63:0] new_pc, write_address_branch, write_data_branch;
     branch branch_unit(
         .opcode(opcode),
         .rd_val(rd_val),
@@ -43,8 +48,8 @@ module main_logic(
         .write_data(write_data_branch)
     );
 
-    reg is_write_mov_reg, is_write_mov_mem;
-    reg[63:0] write_data_mov_reg, write_address_mov_mem, write_data_mov_mem;
+    wire is_write_mov_reg, is_write_mov_mem;
+    wire[63:0] write_data_mov_reg, write_address_mov_mem, write_data_mov_mem;
     mov mov_unit(
         .opcode(opcode),
         .rd_val(rd_val),

@@ -42,7 +42,7 @@ module register_file (
 
     always @(posedge clk) begin
         if (reset) begin
-            for (int i = 0; i < 31; i = i + 1) begin
+            for (integer i = 0; i < 31; i = i + 1) begin
                 registers[i] <= 64'b0;
             end
             registers[31] <= MEM_SIZE;
