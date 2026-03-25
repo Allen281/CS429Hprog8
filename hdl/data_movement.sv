@@ -5,12 +5,13 @@ module mov(
     input wire[63:0] load_data,
     
     output reg is_write_mem, is_write_reg, 
-    output reg[63:0] write_data_mem, write_data_reg, write_address_mem
+    output reg[63:0] write_data_mem, write_data_reg, data_address_mem
 );
     always @(*) begin
         case (opcode)
             5'h10: begin
                 is_write_reg = 1;
+                data_address_mem = rs_val + $signed(literal);
                 write_data_reg = load_data;
             end
             5'h11: begin
@@ -23,7 +24,7 @@ module mov(
             end
             5'h13: begin
                 is_write_mem = 1;
-                write_address_mem = rd_val + $signed(literal);
+                data_address_mem = rd_val + $signed(literal);
                 write_data_mem = rs_val;
             end
         endcase

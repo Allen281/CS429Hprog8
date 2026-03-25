@@ -1,24 +1,20 @@
 module memory(
     input wire clk,
-    input wire[63:0] address, r31_val, pc, rs_val,
-    input wire[11:0] literal,
+    input wire[63:0] address, pc,
     input wire is_write,
     input wire[63:0] write_data,
 
     output reg[63:0] read_data,
-    output wire[32:0] instruction,
-    output wire[63:0] return_address, load_data
+    output wire[31:0] instruction
 );
     localparam MEM_SIZE = 512*1024;
     reg[7:0] bytes [0:MEM_SIZE-1];
 
     initial begin
-        $readmemb("test.hex", bytes, 'h2000);
+        $readmemh("test.hex", bytes, 'h2000);
     end
 
     assign instruction = {bytes[pc], bytes[pc+1], bytes[pc+2], bytes[pc+3]};
-    assign return_address = {bytes[r31_val-1], bytes[r31_val-2], bytes[r31_val-3], bytes[r31_val-4], bytes[r31_val-5], bytes[r31_val-6], bytes[r31_val-7], bytes[r31_val-8]};
-    assign load_data = {bytes[rs_val+literal], bytes[rs_val+literal+1], bytes[rs_val+literal+2], bytes[rs_val+literal+3], bytes[rs_val+literal+4], bytes[rs_val+literal+5], bytes[rs_val+literal+6], bytes[rs_val+literal+7]};
 
     integer i;
     always @(posedge clk) begin
@@ -29,14 +25,10 @@ module memory(
         end
     end
 
-    always @(*) begin
-        read_data = 64'b0;
-        if(!is_write) begin
-            for(i = 0; i < 8; i = i+1) begin
-                read_data[i*8 +: 8] = bytes[address+i];
-            end
-        end
-    end
+    assign read_data = is_write ? 64'b0 : {
+        bytes[address+7], bytes[address+6], bytes[address+5], bytes[address+4],
+        bytes[address+3], bytes[address+2], bytes[address+1], bytes[address]
+    };
 endmodule
 
 module register_file (
