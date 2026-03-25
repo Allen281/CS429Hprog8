@@ -14,7 +14,7 @@ module main_logic(
 );
     wire[63:0] alu_input1, alu_input2;
     assign alu_input1 = (opcode == 5'h19 || opcode == 5'h1b || 5'h05 || 5'h07) ? rd_val : rs_val;
-    assign alu_input2 = (opcode == 5'h19 || opcode == 5'h1b || 5'h05 || 5'h07) ? literal : rt_val;
+    assign alu_input2 = (opcode == 5'h19 || opcode == 5'h1b || 5'h05 || 5'h07) ? {54'b0, literal} : rt_val;
 
     wire[63:0] alu_rslt;
     alu alu_unit(
