@@ -4,7 +4,7 @@ module memory(
     input wire is_write,
     input wire[63:0] write_data,
 
-    output reg[63:0] read_data,
+    output wire[63:0] read_data,
     output wire[31:0] instruction
 );
     localparam MEM_SIZE = 512*1024;

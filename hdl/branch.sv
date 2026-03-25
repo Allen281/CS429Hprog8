@@ -27,7 +27,7 @@ module branch(
                 write_address = r31_val - 8;
                 new_pc = load_data;
             end
-            5'h0e: new_pc = (rs_val <= rt_val) ? pc : rd_val;
+            5'h0e: new_pc = ($signed(rs_val) <= $signed(rt_val)) ? pc : rd_val;
             default: new_pc = pc;
         endcase
     end

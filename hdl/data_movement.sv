@@ -8,6 +8,12 @@ module mov(
     output reg[63:0] write_data_mem, write_data_reg, data_address_mem
 );
     always @(*) begin
+        is_write_mem = 0;
+        is_write_reg = 0;
+        write_data_mem = 0;
+        write_data_reg = 0;
+        data_address_mem = 0;
+
         case (opcode)
             5'h10: begin
                 is_write_reg = 1;
