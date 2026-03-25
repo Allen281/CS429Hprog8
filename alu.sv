@@ -21,10 +21,8 @@ module alu (
             5'h03: rslt = ~input1;
 
             //Shift Operations
-            5'h04: rslt = input1 >> input2;
-            5'h05: rslt = input1 >> input2;
-            5'h06: rslt = input1 << input2;
-            5'h07: rslt = input1 << input2;
+            5'h04, 5'h05: rslt = input1 >>> input2;
+            5'h06, 5'h07: rslt = input1 << input2;
 
             default: rslt = 0;
         endcase
