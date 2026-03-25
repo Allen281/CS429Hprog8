@@ -14,7 +14,7 @@ module memory(
         $readmemh("test.hex", bytes, 'h2000);
     end
 
-    assign instruction = {bytes[pc], bytes[pc+1], bytes[pc+2], bytes[pc+3]};
+    assign instruction = {bytes[pc+3], bytes[pc+2], bytes[pc+1], bytes[pc]};
 
     integer i;
     always @(posedge clk) begin
