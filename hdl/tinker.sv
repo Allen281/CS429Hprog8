@@ -20,7 +20,7 @@ module tinker_core(
 
     wire[4:0] opcode, rd, rs, rt;
     wire[11:0] literal;
-    wire[63:0] rd_val, rs_val, rt_val, r31_val, return_address;
+    wire[63:0] rd_val, rs_val, rt_val, r31_val, return_address, load_data;
 
     reg is_write_mem, is_write_reg;
     reg[63:0] write_data_mem, write_data_reg, read_data_mem, read_rslt, rslt_pc, write_address_mem;
@@ -37,13 +37,16 @@ module tinker_core(
     memory mem(
         .clk(clk),
         .address(write_address_mem),
+        .r31_val(r31_val),
+        .rs_val(rs_val),
         .pc(pc),
         .is_write(is_write_mem),
         .write_data(write_data_mem),
 
         .read_data(read_data_mem),
         .instruction(instruction),
-        .return_address(return_address)
+        .return_address(return_address),
+        .load_data(load_data)
     );
 
     register_file regs(
@@ -71,6 +74,7 @@ module tinker_core(
         .pc(pc),
         .r31_val(r31_val),
         .return_address(return_address),
+        .load_data(load_data),
 
         .is_write_reg(is_write_reg),
         .is_write_mem(is_write_mem),

@@ -2,7 +2,7 @@ module main_logic(
     input wire[4:0] opcode,
     input wire[63:0] rd_val, rs_val, rt_val,
     input wire[11:0] literal,
-    input wire[63:0] pc, r31_val, return_address,
+    input wire[63:0] pc, r31_val, return_address, load_data,
 
     output reg is_write_reg, is_write_mem,
     output reg[63:0] rslt_pc, write_data_reg, write_address_mem, write_data_mem
@@ -57,7 +57,8 @@ module main_logic(
         .is_write_mem(is_write_mov_mem),
         .is_write_reg(is_write_mov_reg),
         .write_data_mem(write_data_mov_mem),
-        .write_data_reg(write_data_mov_reg)
+        .write_data_reg(write_data_mov_reg),
+        .write_address_mem(write_address_mov_mem)
     );
     
 

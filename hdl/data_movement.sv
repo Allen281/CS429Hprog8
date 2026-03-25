@@ -5,7 +5,7 @@ module mov(
     input wire[63:0] load_data,
     
     output reg is_write_mem, is_write_reg, 
-    output reg[63:0] write_data_mem, write_data_reg
+    output reg[63:0] write_data_mem, write_data_reg, write_address_mem
 );
     always @(*) begin
         case (opcode)

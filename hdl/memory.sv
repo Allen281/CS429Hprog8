@@ -1,12 +1,13 @@
 module memory(
     input wire clk,
-    input wire[63:0] address, r31_val, pc,
+    input wire[63:0] address, r31_val, pc, rs_val,
+    input wire[11:0] literal,
     input wire is_write,
     input wire[63:0] write_data,
 
     output reg[63:0] read_data,
     output wire[32:0] instruction,
-    output wire[63:0] return_address
+    output wire[63:0] return_address, load_data
 );
     localparam MEM_SIZE = 512*1024;
     reg[7:0] bytes [0:MEM_SIZE-1];
@@ -17,6 +18,7 @@ module memory(
 
     assign instruction = {bytes[pc], bytes[pc+1], bytes[pc+2], bytes[pc+3]};
     assign return_address = {bytes[r31_val-1], bytes[r31_val-2], bytes[r31_val-3], bytes[r31_val-4], bytes[r31_val-5], bytes[r31_val-6], bytes[r31_val-7], bytes[r31_val-8]};
+    assign load_data = {bytes[rs_val+literal], bytes[rs_val+literal+1], bytes[rs_val+literal+2], bytes[rs_val+literal+3], bytes[rs_val+literal+4], bytes[rs_val+literal+5], bytes[rs_val+literal+6], bytes[rs_val+literal+7]};
 
     integer i;
     always @(posedge clk) begin
