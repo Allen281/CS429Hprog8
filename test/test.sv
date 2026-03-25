@@ -16,9 +16,7 @@ module tb_tinker();
 
     // 4. Main Simulation Sequence
     initial begin
-        // Optional: Dump waveforms to look at in GTKWave later
-        $dumpfile("tinker_waves.vcd");
-        $dumpvars(0, tb_tinker);
+        $readmemh("test.hex", dut.memory.bytes, 'h2000); // Load test program into memory
 
         // Initialize signals
         clk = 0;
@@ -39,7 +37,7 @@ module tb_tinker();
     always @(posedge clk) begin
         if (!reset) begin
             $display("Time: %0t | PC: %h | Inst: %h | r1: %0d | r2: %0d", 
-                      $time, dut.pc, dut.instruction, dut.regs.registers[1], dut.regs.registers[2]);
+                      $time, dut.pc, dut.instruction, dut.reg_file.registers[1], dut.reg_file.registers[2]);
         end
     end
 

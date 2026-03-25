@@ -99,21 +99,118 @@ module float_normalizer (
     end
 endmodule
 
-//TODO: Write checker for special cases
 module check_special_case(
-    input wire[63:0] in,
-    output wire is_special,
-    output reg[62:0] special_case 
-);
+    input wire[4:0] opcode,
+    input wire[63:0] input1, input2,
 
+    output reg is_special,
+    output reg[62:0] special_case
+);
+    wire sign1 = input1[63];
+    wire sign2 = input2[63];
+    wire[10:0] exp1 = input1[62:52];
+    wire[51:0] mant1 = input1[51:0];
+    wire[10:0] exp2 = input2[62:52];
+    wire[51:0] mant2 = input2[51:0];
+
+    wire is_nan1  = (exp1 == {11{1'b1}} && mant1 != 0);
+    wire is_nan2  = (exp2 == {11{1'b1}} && mant2 != 0);
+    wire is_inf1  = (exp1 == {11{1'b1}} && mant1 == 0);
+    wire is_inf2  = (exp2 == {11{1'b1}} && mant2 == 0);
+    wire is_zero1 = (exp1 == 0 && mant1 == 0);
+    wire is_zero2 = (exp2 == 0 && mant2 == 0);
+
+    always @(*) begin
+        is_special = 0;
+        special_case = 63'b0;
+
+        //Nan check
+        if (is_nan1 || is_nan2) begin
+            is_special = 1;
+            special_case = {1'b0, {11{1'b1}}, 52'b1};
+        end 
+        
+        //Double infinity
+        else if (is_inf1 && is_inf2) begin
+            is_special = 1;
+            //Nan
+            if ((opcode == 5'h14 && sign1 != sign2) || (opcode == 5'h15 && sign1 == sign2) || (opcode == 5'h17)) begin
+                special_case = {1'b0, {11{1'b1}}, 52'b1};
+            //Multiplication
+            end else if (opcode == 5'h16) begin
+                special_case = {sign1 ^ sign2, {11{1'b1}}, 52'b0};
+            end else begin
+                special_case = {sign1, {11{1'b1}}, 52'b0};
+            end
+        end 
+        
+        //inf + 0
+        else if ((is_inf1 && is_zero2) || (is_zero1 && is_inf2)) begin
+            is_special = 1;
+            //inf * 0 = NaN
+            if (opcode == 5'h16) begin
+                special_case = {1'b0, {11{1'b1}}, 52'b1}; 
+            //inf / 0 = inf
+            end else if (is_inf1 && opcode == 5'h17) begin
+                special_case = {sign1 ^ sign2, {11{1'b1}}, 52'b0}; 
+            // 0 / Inf = 0
+            end else if (is_zero1 && opcode == 5'h17) begin
+                special_case = {sign1 ^ sign2, 63'b0}; 
+            end else begin
+                if (opcode == 5'h15 && is_inf2) 
+                    special_case = {~sign2, {11{1'b1}}, 52'b0};
+                else 
+                    special_case = is_inf1 ? {sign1, {11{1'b1}}, 52'b0} : {sign2, {11{1'b1}}, 52'b0};
+            end
+        end 
+        
+        //Double 0
+        else if (is_zero1 && is_zero2) begin
+            is_special = 1;
+            if (opcode == 5'h14) special_case = {sign1 & sign2, 63'b0};
+            else if (opcode == 5'h15) special_case = {sign1 & ~sign2, 63'b0};
+            else if (opcode == 5'h16) special_case = {sign1 ^ sign2, 63'b0};
+            else if (opcode == 5'h17) special_case = {1'b0, {11{1'b1}}, 52'b1};
+        end
+        
+        //Divide by 0
+        else if (is_zero2 && opcode == 5'h17) begin
+            is_special = 1;
+            special_case = {sign1 ^ sign2, {11{1'b1}}, 52'b0};
+        end 
+        
+        //Infinity
+        else if (is_inf1 || is_inf2) begin
+            is_special = 1;
+            if (opcode == 5'h16) begin
+                special_case = {sign1 ^ sign2, {11{1'b1}}, 52'b0};
+            end else if (opcode == 5'h17) begin
+                if (is_inf1) special_case = {sign1 ^ sign2, {11{1'b1}}, 52'b0};
+                else special_case = {sign1 ^ sign2, 63'b0};   
+            end else if (opcode == 5'h14) begin
+                special_case = is_inf1 ? {sign1, {11{1'b1}}, 52'b0} : {sign2, {11{1'b1}}, 52'b0};
+            end else if (opcode == 5'h15) begin
+                special_case = is_inf1 ? {sign1, {11{1'b1}}, 52'b0} : {~sign2, {11{1'b1}}, 52'b0};
+            end
+        end
+    end
 endmodule
 
 module fpu (
     input wire[4:0] opcode,
     input wire[63:0] rs_val, rt_val,
-    input wire[11:0] literal,
     output reg[63:0] rslt
 );
+
+    wire is_special;
+    wire[63:0] special_case;
+    check_special_case special_case_checker(
+        .opcode(opcode),
+        .input1(rs_val),
+        .input2(rt_val),
+        .is_special(is_special),
+        .special_case(special_case)
+    );
 
     wire rs_sign, rt_sign;
     wire[11:0] rs_exp, rt_exp;
@@ -141,5 +238,7 @@ module fpu (
             5'h14, 5'h15: rslt = add_rslt;
             5'h16, 5'h17: rslt = mult_rslt;
         endcase
+
+        if(is_special) rslt = special_case;
     end
 endmodule

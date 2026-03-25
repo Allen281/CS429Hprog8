@@ -12,13 +12,15 @@ module main_logic(
     output reg is_write_reg, is_write_mem,
     output reg[63:0] rslt_pc, write_data_reg, write_address_mem, write_data_mem
 );
+    wire[63:0] alu_input1, alu_input2;
+    assign alu_input1 = (opcode == 5'h19 || opcode == 5'h1b || 5'h05 || 5'h07) ? rd_val : rs_val;
+    assign alu_input2 = (opcode == 5'h19 || opcode == 5'h1b || 5'h05 || 5'h07) ? literal : rt_val;
+
     wire[63:0] alu_rslt;
     alu alu_unit(
         .opcode(opcode),
-        .rd_val(rd_val),
-        .rs_val(rs_val),
-        .rt_val(rt_val),
-        .literal(literal),
+        .input1(alu_input1),
+        .input2(alu_input2),
         .rslt(alu_rslt)
     );
 
@@ -27,7 +29,6 @@ module main_logic(
         .opcode(opcode),
         .rs_val(rs_val),
         .rt_val(rt_val),
-        .literal(literal),
         .rslt(fpu_rslt)
     );
 
