@@ -37,7 +37,7 @@ module tinker_core(
         .literal(literal)
     );
 
-    memory mem(
+    memory memory(
         .clk(clk),
         .address(write_address_mem),
         .pc(pc),
@@ -48,7 +48,7 @@ module tinker_core(
         .instruction(instruction)
     );
 
-    register_file regs(
+    register_file reg_file(
         .clk(clk),
         .is_write(is_write_reg),
         .reset(reset),
