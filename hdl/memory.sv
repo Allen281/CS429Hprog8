@@ -10,10 +10,6 @@ module memory(
     localparam MEM_SIZE = 512*1024;
     reg[7:0] bytes [0:MEM_SIZE-1];
 
-    initial begin
-        $readmemh("test.hex", bytes, 'h2000);
-    end
-
     assign instruction = {bytes[pc+3], bytes[pc+2], bytes[pc+1], bytes[pc]};
 
     integer i;
