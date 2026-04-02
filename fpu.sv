@@ -104,7 +104,7 @@ module check_special_case(
     input wire[63:0] input1, input2,
 
     output reg is_special,
-    output reg[62:0] special_case
+    output reg[63:0] special_case
 );
     wire sign1 = input1[63];
     wire sign2 = input2[63];
