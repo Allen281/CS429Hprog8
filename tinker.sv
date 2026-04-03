@@ -1,5 +1,5 @@
-`include "main_logic.sv"
-`include "memory.sv"
+`include "hdl/main_logic.sv"
+`include "hdl/memory.sv"
 
 module decoder (
     input wire[31:0] instruction,

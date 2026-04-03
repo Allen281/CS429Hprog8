@@ -98,7 +98,7 @@ module testbench();
         mem_is_write = 0; mem_address = 0; mem_write_data = 0;
         reg_is_write = 0; reg_write_reg = 0; reg_read_reg1 = 0; 
         reg_read_reg2 = 0; reg_read_reg3 = 0; reg_write_data = 0;
-
+        
         #20 reset = 0;
 
         $display("========================================");

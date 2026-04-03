@@ -1,7 +1,7 @@
-`include "alu.sv"
-`include "branch.sv"
-`include "data_movement.sv"
-`include "fpu.sv"
+`include "hdl/alu.sv"
+`include "hdl/branch.sv"
+`include "hdl/data_movement.sv"
+`include "hdl/fpu.sv"
 
 module main_logic(
     input wire[4:0] opcode,
