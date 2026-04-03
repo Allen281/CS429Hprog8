@@ -2,23 +2,16 @@
 
 module testbench();
 
-    // ---------------------------------------------------------
-    // Shared Signals and Clock/Reset Generation
-    // ---------------------------------------------------------
     reg clk;
     reg reset;
 
-    always #5 clk = ~clk; // 10ns clock period
+    always #5 clk = ~clk;
 
-    // Common inputs
     reg [4:0] opcode;
     reg [63:0] rd_val, rs_val, rt_val;
     reg signed [11:0] literal;
     reg [63:0] pc, r31_val, load_data;
-    
-    // ---------------------------------------------------------
-    // 1. ALU Test Signals & Instantiation
-    // ---------------------------------------------------------
+
     wire [63:0] alu_rslt;
     alu dut_alu (
         .opcode(opcode),
@@ -27,9 +20,6 @@ module testbench();
         .rslt(alu_rslt)
     );
 
-    // ---------------------------------------------------------
-    // 2. Branch Test Signals & Instantiation
-    // ---------------------------------------------------------
     wire branch_is_write;
     wire [63:0] branch_new_pc, branch_write_address, branch_write_data;
     branch dut_branch (
@@ -42,9 +32,6 @@ module testbench();
         .write_data(branch_write_data)
     );
 
-    // ---------------------------------------------------------
-    // 3. Data Movement Test Signals & Instantiation
-    // ---------------------------------------------------------
     wire mov_is_write_mem, mov_is_write_reg;
     wire [63:0] mov_write_data_mem, mov_write_data_reg, mov_data_address_mem;
     mov dut_mov (
@@ -56,9 +43,6 @@ module testbench();
         .data_address_mem(mov_data_address_mem)
     );
 
-    // ---------------------------------------------------------
-    // 4. FPU Test Signals & Instantiation
-    // ---------------------------------------------------------
     wire [63:0] fpu_rslt;
     fpu dut_fpu (
         .opcode(opcode),
@@ -66,9 +50,6 @@ module testbench();
         .rslt(fpu_rslt)
     );
 
-    // ---------------------------------------------------------
-    // 5. Main Logic Test Signals & Instantiation
-    // ---------------------------------------------------------
     wire main_is_write_reg, main_is_write_mem;
     wire [63:0] main_rslt_pc, main_write_data_reg, main_write_address_mem, main_write_data_mem;
     main_logic dut_main_logic (
@@ -82,9 +63,6 @@ module testbench();
         .write_data_mem(main_write_data_mem)
     );
 
-    // ---------------------------------------------------------
-    // 6. Memory & Register File Test Signals & Instantiation
-    // ---------------------------------------------------------
     reg mem_is_write;
     reg [63:0] mem_address, mem_write_data;
     wire [63:0] mem_read_data;
@@ -112,11 +90,7 @@ module testbench();
     );
 
 
-    // ---------------------------------------------------------
-    // Test Vectors
-    // ---------------------------------------------------------
     initial begin
-        // Initialize basic variables
         clk = 0;
         reset = 1;
         opcode = 0; rd_val = 0; rs_val = 0; rt_val = 0;
@@ -167,8 +141,8 @@ module testbench();
         // --- 4. FPU Tests ---
         // Test Special Case - Double Zero Addition (Opcode 5'h14)
         opcode = 5'h14; 
-        rs_val = 64'h0000000000000000; // 0.0
-        rt_val = 64'h0000000000000000; // 0.0
+        rs_val = 64'h0000000000000000;
+        rt_val = 64'h0000000000000000;
         #5;
         if (fpu_rslt === 64'h0000000000000000) $display("[PASS] FPU: Double Zero Addition");
         else $display("[FAIL] FPU: Double Zero Addition");
@@ -185,9 +159,9 @@ module testbench();
         mem_address = 64'h0000_0010;
         mem_write_data = 64'h1122334455667788;
         mem_is_write = 1;
-        #10; // Wait a clock cycle
-        mem_is_write = 0; // Turn off write, do a read
-        #10; // Wait to retrieve data
+        #10;
+        mem_is_write = 0;
+        #10;
         if (mem_read_data === 64'h1122334455667788) $display("[PASS] MEMORY: Read/Write validation");
         else $display("[FAIL] MEMORY: Read/Write validation (Expected: 1122334455667788, Got: %h)", mem_read_data);
 
@@ -200,10 +174,10 @@ module testbench();
         reg_write_reg = 5'd10;
         reg_write_data = 64'hABCD_EF01;
         reg_is_write = 1;
-        #10; // Apply write
+        #10;
         reg_is_write = 0;
         reg_read_reg1 = 5'd10;
-        #10; // Read it out
+        #10;
         if (reg_read_data1 === 64'hABCD_EF01) $display("[PASS] REGFILE: Register Write/Read validation");
         else $display("[FAIL] REGFILE: Register Write/Read");
 
